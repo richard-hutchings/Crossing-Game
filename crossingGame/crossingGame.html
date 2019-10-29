@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <title>Crossing Game</title>
+      <style type="text/css">
+      * {
+          background-color: blue;
+      }
+      canvas {
+
+        background-color: lawngreen;
+        border: black solid 2px;
+      }
+
+</style>
+    </head>
+    <body>
+        <h1>Crossing Game</h1>
+        <canvas id="gameCanvas" width="1320" height="520"></canvas>
+        <script type="text/javascript">
+        var canvas = document.getElementById('gameCanvas');
+        var ctx = canvas.getContext('2d');
+        
+        let screenWidth = 1320;
+        let screenHeight = 520;
+        let width = 30;
+        let isGameLive = true;
+
+ class GameCharacter {
+     constructor ( x, y, width, height, color, speed) {
+         this.x = x;
+         this.y = y;
+         this.width = width;
+         this.height = height;
+         this.color = color;
+         this.speed = speed;
+         this.maxSpeed = 4;
+     }
+
+     moveVertical() {
+         if(this.y > screenHeight - 50 || this.y < 20) {
+             this.speed = -this.speed;
+         } 
+        
+         this.y += this.speed;       
+     }
+
+     moveHorizontal( xAmount) {
+         this.x += this.speed;
+     }
+
+    
+ }
+
+    var enemies = [
+        new GameCharacter(70, 70, width, width, "purple", 1 ),
+        new GameCharacter(150, 170, width, width, "darkGreen", 2 ),
+        new GameCharacter(300, 270, width, width, "darkPurple", 1 ),
+        new GameCharacter(450, 370, width, width, "purple", 2 ),
+        new GameCharacter(600, 470, width, width, "darkGreen", 2 ),
+        new GameCharacter(750, 270, width, width, "darkPurple", 1 ),
+        new GameCharacter(850, 370, width, width, "purple", 3 ),
+        new GameCharacter(970, 170, width, width, "darkGreen", 2 ),
+        new GameCharacter(1050, 370, width, width, "darkPurple", 3 ),
+        new GameCharacter(1150, 270, width, width, "purple", 3 ),
+
+];
+
+
+    var player = new GameCharacter(10, 260, 30, 30, "red", 0);   
+
+    var end = new GameCharacter(1300, 230, 25, 80, "yellow", 0);
+
+ /*   var sprites = {};
+
+    var loadSprites = function(){
+             sprites.player = new Image();
+             sprites.player.src = '\images\playerElf.png';
+
+             sprites.background = new Image();
+             sprites.background.src = '\images\BG.png';
+
+             sprites.enemies = new Image();
+             sprites.enemies.src = '\images\9.png';
+
+             sprites.end = new Image();
+             sprites.end.src = '\images\crystal.png';
+    };   */
+
+    document.onkeydown = function(event) {
+        let keyPressed = event.keyCode;
+        if (keyPressed == 39) {
+            player.speed = 2;
+        }
+        if (keyPressed == 37) {
+            player.speed = -1;
+        }
+    }
+
+    document.onkeyup = function(event) {
+            player.speed = 0;
+    }
+
+    var checkCollisions = function(rect1, rect2) {
+        var xOverlap = Math.abs(rect1.x - rect2.x) 
+        <= Math.max(rect1.width, rect2.width);
+        var yOverlap = Math.abs(rect1.y - rect2.y) 
+        <= Math.max(rect1.height, rect2.height);
+        return xOverlap && yOverlap;
+    }
+    
+    var draw = function() {
+       ctx.clearRect(0, 0, screenWidth, screenHeight);
+
+    //   ctx.drawImage(sprites.background, 0, 0);
+    //   ctx.drawImage(sprites.player, player.x, player.y);
+    //   ctx.drawImage(sprites.end, end.x, end.y);
+      
+
+       ctx.fillStyle = player.color;
+       ctx.fillRect(player.x, player.y, player.width, player.height);
+
+       ctx.fillStyle = end.color;
+       ctx.fillRect(end.x, end.y, end.width, end.height);
+
+       enemies.forEach(function(element) {
+      //  ctx.drawImage(sprites.enemies, element.x, element.y);
+       ctx.fillStyle = element.color;
+       ctx.fillRect(element.x, element.y, element.width, element.height);
+       });
+       
+    }
+
+    var update = function() {
+          enemies.forEach(function(element) {
+              if(checkCollisions(player, element)) {
+                  endGame("END GAME!");
+              }  else if (checkCollisions(player, end)) {
+                  endGame("HORRAY! You Made It!");
+              }
+          element.moveVertical();
+
+        });  
+        player.moveHorizontal();
+       
+        
+      /*  enemies[0].moveVertical();
+        enemies[1].moveVertical();
+        enemies[2].moveVertical();
+        enemies[3].moveVertical();
+        enemies[4].moveVertical();
+        enemies[5].moveVertical();
+        enemies[6].moveVertical(); */
+    }
+
+    var endGame = function(text){
+        isGameLive = false;
+        alert(text);
+        window.location = "";
+        player(10, 260);
+    }
+    var step = function() {
+        update();
+        draw();
+
+        if(isGameLive) {
+     window.requestAnimationFrame(step);
+        }
+ }
+   // loadSprites();
+    step();
+
+      </script>
+    </body>
+</html>
